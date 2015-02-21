@@ -22,8 +22,11 @@ class RegisterUserHandler
     }
 }
 
-$locator = new InMemoryLocator();
-$locator->addHandler(new RegisterUserHandler(), RegisterUserCommand::class);
+$mapping = [
+    'RegisterUserCommand' => 'RegisterUserHandler',
+];
+
+$locator = new InMemoryLocator($mapping);
 
 $handlerMiddleware = new League\Tactician\Handler\CommandHandlerMiddleware(
     $locator,
@@ -31,3 +34,14 @@ $handlerMiddleware = new League\Tactician\Handler\CommandHandlerMiddleware(
 );
 
 $commandBus = new \League\Tactician\CommandBus([$handlerMiddleware]);
+
+$ruc = new RegisterUserCommand;
+$ruc->emailAddress = 'a@b.com';
+$ruc->password = 'secret';
+
+
+try {
+    $commandBus->handle($ruc);
+} catch (\Exception $e) {
+    echo $e->getMessage();
+}

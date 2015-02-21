@@ -3,17 +3,20 @@
 namespace League\Tactician\Handler\Locator;
 
 use League\Tactician\Command;
-use League\Tactician\Exception\MissingHandlerException;
+use League\Tactician\Exception\MissingCommandException;
 
 /**
  * Fetch handler instances from an in-memory collection.
  *
- * This locator allows you to bind a handler object to receive commands of a
+ * This locator allows you to bind a handler fqcn to receive commands of a
  * certain class name. For example:
  *
  *      // Wire everything together
- *      $myHandler = new TaskAddedHandler($dependency1, $dependency2);
- *      $inMemoryLocator->addHandler($myHandler, 'My\TaskAddedCommand');
+ *      $mapping = [
+ *          '\Path\To\CommandHandler' => '\Path\To\Command',
+ *      ];
+ *
+ *      $inMemoryLocator->addHandlers($mapping);
  *
  *      // Returns $myHandler
  *      $inMemoryLocator->getHandlerForCommand(new My\TaskAddedCommand());
@@ -21,7 +24,7 @@ use League\Tactician\Exception\MissingHandlerException;
 class InMemoryLocator implements HandlerLocator
 {
     /**
-     * @var object[]
+     * @var array
      */
     protected $handlers = [];
 
@@ -49,8 +52,8 @@ class InMemoryLocator implements HandlerLocator
      *
      * The map should be an array in the format of:
      *  [
-     *      AddTaskCommand::class      => $someHandlerInstance,
-     *      CompleteTaskCommand::class => $someHandlerInstance,
+     *      '\Path\To\AddTaskCommand'      => '\Path\To\someHandlerInstance',
+     *      '\Path\To\CompleteTaskCommand' => '\Path\To\someHandlerInstance',
      *  ]
      *
      * @param array $commandClassToHandlerMap
@@ -74,9 +77,9 @@ class InMemoryLocator implements HandlerLocator
         $className = get_class($command);
 
         if (!isset($this->handlers[$className])) {
-            throw MissingHandlerException::forCommand($command);
+            throw MissingCommandException::forCommand($command);
         }
 
-        return $this->handlers[$className];
+        return new $this->handlers[$className];
     }
 }
