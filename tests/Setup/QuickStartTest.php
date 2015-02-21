@@ -6,6 +6,7 @@ use League\Tactician\CommandBus;
 use League\Tactician\Setup\QuickStart;
 use League\Tactician\Tests\Fixtures\Command\AddTaskCommand;
 use League\Tactician\Tests\Fixtures\Command\CompleteTaskCommand;
+use League\Tactician\Tests\Fixtures\Handler\DynamicMethodsHandler;
 use Mockery;
 
 class QuickStartTest extends \PHPUnit_Framework_TestCase
@@ -19,12 +20,9 @@ class QuickStartTest extends \PHPUnit_Framework_TestCase
     public function testCommandToHandlerMapIsProperlyConfigured()
     {
         $map = [
-            AddTaskCommand::class => Mockery::mock(ConcreteMethodsHandler::class),
-            CompleteTaskCommand::class => Mockery::mock(ConcreteMethodsHandler::class),
+            AddTaskCommand::class => DynamicMethodsHandler::class,
+            CompleteTaskCommand::class => DynamicMethodsHandler::class,
         ];
-
-        $map[AddTaskCommand::class]->shouldReceive('handle')->once();
-        $map[CompleteTaskCommand::class]->shouldReceive('handle')->never();
 
         $commandBus = QuickStart::create($map);
         $commandBus->handle(new AddTaskCommand());
