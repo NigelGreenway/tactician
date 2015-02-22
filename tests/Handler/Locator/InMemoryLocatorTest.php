@@ -5,7 +5,6 @@ namespace League\Tactician\Tests\Handler\Locator;
 use League\Tactician\Handler\Locator\InMemoryLocator;
 use League\Tactician\Tests\Fixtures\Command\AddTaskCommand;
 use League\Tactician\Tests\Fixtures\Command\CompleteTaskCommand;
-use League\Tactician\Tests\Fixtures\Handler\ConcreteMethodsHandler;
 use stdClass;
 
 class InMemoryLocatorTest extends \PHPUnit_Framework_TestCase
@@ -24,10 +23,10 @@ class InMemoryLocatorTest extends \PHPUnit_Framework_TestCase
     {
         $handler = new stdClass();
 
-        $this->inMemoryLocator->addHandler(get_class($handler), CompleteTaskCommand::class);
+        $this->inMemoryLocator->addHandler($handler, CompleteTaskCommand::class);
 
-        $this->assertInstanceOf(
-            'stdClass',
+        $this->assertSame(
+            $handler,
             $this->inMemoryLocator->getHandlerForCommand(new CompleteTaskCommand())
         );
     }
@@ -35,25 +34,25 @@ class InMemoryLocatorTest extends \PHPUnit_Framework_TestCase
     public function testConstructorAcceptsMapOfCommandClassesToHandlers()
     {
         $commandToHandlerMap = [
-            AddTaskCommand::class => ConcreteMethodsHandler::class,
-            CompleteTaskCommand::class => ConcreteMethodsHandler::class,
+            AddTaskCommand::class => new stdClass(),
+            CompleteTaskCommand::class => new stdClass()
         ];
 
         $locator = new InMemoryLocator($commandToHandlerMap);
 
         $this->assertSame(
             $commandToHandlerMap[AddTaskCommand::class],
-            get_class($locator->getHandlerForCommand(new AddTaskCommand()))
+            $locator->getHandlerForCommand(new AddTaskCommand())
         );
 
         $this->assertSame(
             $commandToHandlerMap[CompleteTaskCommand::class],
-            get_class($locator->getHandlerForCommand(new CompleteTaskCommand()))
+            $locator->getHandlerForCommand(new CompleteTaskCommand())
         );
     }
 
     /**
-     * @expectedException \League\Tactician\Exception\MissingCommandException
+     * @expectedException \League\Tactician\Exception\MissingHandlerException
      */
     public function testHandlerMissing()
     {
