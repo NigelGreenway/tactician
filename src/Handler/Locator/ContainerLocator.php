@@ -23,7 +23,7 @@ class ContainerLocator implements HandlerLocator
     protected $container;
 
     /**
-     * @var []
+     * @var array
      */
     protected $commandToHandlerIdMap = [];
 
@@ -77,8 +77,10 @@ class ContainerLocator implements HandlerLocator
      * Retrieve handler for the given command
      *
      * @param  Command $command
-     * @return object
+     *
      * @throws MissingHandlerException
+     *
+     * @return object
      */
     public function getHandlerForCommand(Command $command)
     {

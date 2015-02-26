@@ -16,6 +16,7 @@ class MissingContainerServiceException extends \OutOfBoundsException implements 
 
     /**
      * @param Command $command
+     *
      * @return static
      */
     public static function forCommand(Command $command)
