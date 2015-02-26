@@ -20,9 +20,12 @@ class QuickStartTest extends \PHPUnit_Framework_TestCase
     public function testCommandToHandlerMapIsProperlyConfigured()
     {
         $map = [
-            AddTaskCommand::class => DynamicMethodsHandler::class,
-            CompleteTaskCommand::class => DynamicMethodsHandler::class,
+            AddTaskCommand::class => Mockery::mock(ConcreteMethodsHandler::class),
+            CompleteTaskCommand::class => Mockery::mock(ConcreteMethodsHandler::class),
         ];
+
+        $map[AddTaskCommand::class]->shouldReceive('handle')->once();
+        $map[CompleteTaskCommand::class]->shouldReceive('handle')->never();
 
         $commandBus = QuickStart::create($map);
         $commandBus->handle(new AddTaskCommand());
