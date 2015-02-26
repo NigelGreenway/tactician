@@ -18,7 +18,7 @@ use League\Container\Exception\ReflectionException;
 class ContainerLocator implements HandlerLocator
 {
     /**
-     * @var object[]
+     * @var Container
      */
     protected $container;
 
@@ -28,8 +28,10 @@ class ContainerLocator implements HandlerLocator
     protected $commandToHandlerIdMap = [];
 
     /**
-     * @param object Container
-     * @param array  $commandClassToHandlerMap
+     * Class constructor
+     *
+     * @param Container $container
+     * @param array     $commandClassToHandlerMap
      */
     public function __construct(
         Container $container,
@@ -37,7 +39,7 @@ class ContainerLocator implements HandlerLocator
     ) {
         $this->container = $container;
 
-        if (false === empty($commandClassToHandlerMap)) {
+        if (empty($commandClassToHandlerMap) === false) {
             $this->addHandlers($commandClassToHandlerMap);
         }
     }
@@ -58,8 +60,8 @@ class ContainerLocator implements HandlerLocator
      *
      * The map should be an array in the format of:
      *  [
-     *      AddTaskCommand::class      => $someHandlerInstance,
-     *      CompleteTaskCommand::class => $someHandlerInstance,
+     *      'AddTaskCommand'      => 'AddTaskCommandHandler',
+     *      'CompleteTaskCommand' => 'CompleteTaskCommandHandler',
      *  ]
      *
      * @param array $commandClassToHandlerMap
@@ -74,7 +76,7 @@ class ContainerLocator implements HandlerLocator
     /**
      * Retrieve handler for the given command
      *
-     * @param Command $command
+     * @param  Command $command
      * @return object
      * @throws MissingHandlerException
      */
